@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="10;url=/" />
+    <title>Jaycar Component Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    {{ fontawesome_html() }}
+</head>
+
+<body class="bg-dark container">
+<h1 class="text-light mt-5 text-center display-4">{{ title }}</h1>
+<h2 class="text-light mt-5 text-center">{{ subtitle }}</h2>
+<!--<p class="text-light text-center">{{ error }}</p>-->
+<div class="text-center mt-4"><a href="/" class="btn btn-secondary btn-sm">Go Back</a></div>
+<br>
+</body>
+</html>

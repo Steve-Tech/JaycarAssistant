@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="600;url=/" />
+    <title>Jaycar Component Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+</head>
+{% if p_top == None or p_left == None %}
+<body class="bg-dark container">
+{% else %}
+<body class="bg-dark container" style="position: fixed; top: {{ p_top }}%; left: {{ p_left }}%">
+{% endif %}
+<h1 class="text-light mt-5 text-center display-4">What are you looking for?</h1>
+<table class="col-12">
+    <tbody>
+    <tr class="row">
+        <td class="col-4 ml-auto"><a href="resistors" class="btn btn-light btn-lg btn-block h1">Resistors</a></td>
+        <td class="col-4 mr-auto"><a href="capacitors_e" class="btn btn-light btn-lg btn-block h1">Electrolytic Capacitors</a></td>
+    </tr>
+    <tr class="row">
+        <td class="col-4 ml-auto"><a href="pots"class="btn btn-light btn-lg btn-block h1">Potentiometers & Trimpots</a></td>
+        <td class="col-4 mr-auto"><a href="capacitors_o" class="btn btn-light btn-lg btn-block h1">Other Capacitors</a></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

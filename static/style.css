@@ -1,0 +1,6 @@
+.bg-purple {
+    background-color: #7A43B6;
+}
+.btn-group-vertical>.btn, .btn-group>.btn {
+     flex-basis: 0;
+}

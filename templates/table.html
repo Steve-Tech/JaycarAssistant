@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="refresh" content="300;url=/"/>
+    <meta charset="UTF-8">
+    <title>Jaycar Component Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {{ fontawesome_html() }}
+</head>
+<body class="bg-dark container">
+<h1 class="text-light mt-5 text-center display-4">Found what you are looking for?</h1>
+<h4 class="text-light text-center">If not ask a staff member</h4>
+<h2 class="text-light text-center">{{ header | safe }}</h2>
+<h5 class="text-light text-center">{{ message }}</h5>
+<table id="table" class="col-12 text-center text-light table-bordered">
+    <tbody>
+{% for table_row in table_data %}
+   <tr>
+   {% for table_content in table_row %}
+       {% if table_content[0] == 'EoL' %}
+           </tr></tbody></table><br><h5 class="text-light text-center">{{ message2 }}</h5><table id="table" class="col-12 text-center text-light table-bordered"><tbody><tr>
+       {% else %}
+            <td> {{ table_content[0] | safe }} </td>
+       {% endif %}
+   {% endfor %}
+   </tr>
+{% endfor %}
+    </tbody>
+</table>
+<br>
+{% if pricing != None %}
+<h4 class="text-light text-center">Pricing</h4>
+<table class="col-6 mx-auto text-center text-light table-bordered">
+    <tbody>
+{% for table_row in pricing %}
+   <tr class="{{ table_row[0] }}">
+   {% for table_content in table_row[1] %}
+        <td> {{ table_content }} </td>
+   {% endfor %}
+   </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endif %}
+<div class="text-center mt-4"><a href="/" class="btn btn-secondary btn-sm">Go Back</a></div>
+<br>
+</body>
+</html>
