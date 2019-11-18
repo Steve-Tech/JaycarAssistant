@@ -11,15 +11,6 @@ fa = FontAwesome(app)
 @app.route('/')
 def main_page():
     if flask.request.remote_addr == '127.0.0.1':  # Check if it is being accessed by itself (for screensaver or shutdown)
-        '''from sys import platform
-        print(platform)
-        if platform == "linux" or platform == "linux2":  # If on linux for Raspberry pi
-            from gpiozero import Button
-            print(Button(2))
-            if Button(2).is_pressed:
-                from os import system
-                system("sudo shutdown now")'''
-
         from random import randint  # Moves the menu to a random part of the screen to act as a screen saver
         return flask.render_template("main.html", p_top=randint(0, 20), p_left=randint(-10, 15))
     else: return flask.render_template("main.html", p_top=None, p_left=None)  # Setting p_top or p_left to None disables the screen saver
