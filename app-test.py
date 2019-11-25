@@ -1,9 +1,10 @@
 import unittest
 
 from app import app
+import data_file
 
 
-class JaycarAssistantPageTest(unittest.TestCase):
+class PageTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass
@@ -21,7 +22,7 @@ class JaycarAssistantPageTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_upload(self):
+    def testPages(self):
         # Test pages
         for page in ['/', '/resistors', '/capacitors_e', '/capacitors_o', '/pots']:
             self.assertEqual(self.app.get(page, follow_redirects=True).status_code, 200)
@@ -36,6 +37,18 @@ class JaycarAssistantPageTest(unittest.TestCase):
             self.assertEqual(self.app.get(page, follow_redirects=True).status_code, 400)
         # Test page not found
         self.assertEqual(self.app.get('/404', follow_redirects=True).status_code, 404)
+
+
+class CSVTest(unittest.TestCase):
+    def testFiles(self):
+        for fileName in ['Resistors.csv', 'Potentiometers.csv', 'Capacitors.csv', 'CapacitorsE.csv']:
+            self.assertIsNotNone(data_file.openCSV(fileName))
+
+    def testTables(self):
+        self.assertIsNotNone(data_file.Resistors.table)
+        self.assertIsNotNone(data_file.Potentiometers.table)
+        self.assertIsNotNone(data_file.Capacitors.table)
+        self.assertIsNotNone(data_file.CapacitorsE.table)
 
 
 if __name__ == '__main__':

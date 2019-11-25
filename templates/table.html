@@ -18,7 +18,7 @@
 {% for table_row in table_data %}
    <tr>
    {% for table_content in table_row %}
-       {% if table_content[0] == 'EoL' %}
+       {% if 'EoL' in table_content[0] %}
            </tr></tbody></table><br><h5 class="text-light text-center">{{ message2 }}</h5><table id="table" class="col-12 text-center text-light table-bordered"><tbody><tr>
        {% else %}
             <td> {{ table_content[0] | safe }} </td>

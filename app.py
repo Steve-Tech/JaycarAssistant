@@ -2,7 +2,7 @@ import flask
 from flask import Flask
 from flask_fontawesome import FontAwesome
 
-import layout
+import data_file
 
 app = Flask(__name__)
 fa = FontAwesome(app)
@@ -10,7 +10,7 @@ fa = FontAwesome(app)
 
 @app.route('/')
 def main_page():
-    if flask.request.remote_addr == '127.0.0.1':  # Check if it is being accessed by itself (for screensaver or shutdown)
+    if flask.request.remote_addr == '127.0.0.1':  # Check if it is being accessed by itself (for screensaver)
         from random import randint  # Moves the menu to a random part of the screen to act as a screen saver
         return flask.render_template("main.html", p_top=randint(0, 20), p_left=randint(-10, 15))
     else: return flask.render_template("main.html", p_top=None, p_left=None)  # Setting p_top or p_left to None disables the screen saver
@@ -24,7 +24,8 @@ def resistor_page():
         return flask.render_template("error.html", title="Please enter a valid resistance", subtitle="Redirecting to the first page in 10 seconds..."), 400
     else:
         print("R: Got Query", query)
-        return create_data(query, layout.resistors)
+        #return create_data(query, layout.resistors)
+        return create_data(query, data_file.Resistors.table)
 
 @app.route('/capacitors_e')
 def capacitor_e_page():
@@ -36,7 +37,7 @@ def capacitor_e_page():
         return flask.render_template("error.html", title="Please enter a valid capacitance", subtitle="Redirecting to the first page in 10 seconds..."), 400
     else:
         print("C: Got Query", query, volts + 'V')
-        return create_data(query, layout.capacitors_e)
+        return create_data(query, data_file.CapacitorsE.table)
 
 @app.route('/capacitors_o')
 def capacitor_o_page():
@@ -48,7 +49,7 @@ def capacitor_o_page():
         return flask.render_template("error.html", title="Please enter a valid capacitance", subtitle="Redirecting to the first page in 10 seconds..."), 400
     else:
         print("C: Got Query", query, volts + 'v')
-        return create_data(query, layout.capacitors_o)
+        return create_data(query, data_file.Capacitors.table)
 
 
 @app.route('/pots')
@@ -59,7 +60,7 @@ def potentiometer_page():
         return flask.render_template("error.html", title="Please enter a valid resistance", subtitle="Redirecting to the first page in 10 seconds..."), 400
     else:
         print("P: Got Query", query)
-        return create_data(query, layout.potentiometers)
+        return create_data(query, data_file.Potentiometers.table)
 
 @app.errorhandler(404)
 def page_not_found(error):  # This will catch errors and redirect to the home screen so the Raspberry Pi does not get stuck on one page
@@ -114,48 +115,42 @@ def create_data(query, layout_item):
             data = ['']
             for k in j:  # for the item list in the box list
                 count += 1
-                if layout_item is layout.resistors:
+                if layout_item is data_file.Resistors.table:
                     if k == query or k == query + '0':  # if the item is the query
                         data[0] += "<span class='bg-danger d-block mb-n4'>" + k + "</span>" + '<br>'  # highlight it in red
                         item_count += 1
                     else:
-                        if k != "": data[0] += "<span class='" + layout.get_resistor_colour(count) + " d-block mb-n4'>" + k + "</span>" + '<br>'  # otherwise give it its corresponding colour
+                        if k != "": data[0] += "<span class='" + data_file.Resistors.get_colour(count) + " d-block mb-n4'>" + k + "</span>" + '<br>'  # otherwise give it its corresponding colour
                         else: data[0] += k + '<br>'  # or if it's empty just give it a break (ha ha, that was terrible I know)
 
-                elif layout_item is layout.potentiometers:
+                elif layout_item is data_file.Potentiometers.table:
                     ptype = flask.request.args['type']
                     if k == ptype + query or k == ptype + query + '0' or k == ptype + query.replace('K', '000R'):  # if item is the query but this time Jaycar's naming is dumb
                         data[0] += "<span class='bg-danger d-block mb-n4'>" + k + "</span>" + '<br>'
                         item_count += 1
                     else:
-                        if k != "": data[0] += "<span class='" + layout.get_potentiometer_colour(count) + " d-block mb-n4'>" + k + "</span>" + '<br>'
+                        if k != "": data[0] += "<span class='" + data_file.Potentiometers.get_colour(count) + " d-block mb-n4'>" + k + "</span>" + '<br>'
                         else: data[0] += k + '<br>'
 
-                elif layout_item is layout.capacitors_e:
-                    if k[0] == query and k[1] != '' and k[1] == flask.request.args['volts']:
-                        data[0] += "<span class='bg-danger d-block mb-n4'>" + k[0] + "</span>" + '<br>'
+                elif layout_item is data_file.Capacitors.table:
+                    ks = k.split('|')
+                    if ks[0] == query and ks[1] != '' and ks[1] == flask.request.args['volts']:
+                        data[0] += "<span class='bg-danger d-block mb-n4'>" + ks[0] + "</span>" + '<br>'
                         item_count += 1
                     else:
-                        if k == '&nbsp;': data[0] += '&nbsp;' * 8; count += 4
-                        elif k[0] != "": data[0] += "<span class='" + layout.get_capacitor_e_colour(count) + " d-block mb-n4'>" + k[0] + "</span>" + '<br>'
-                        else: data[0] += k[0] + '<br>'
+                        if k == 'nbsp': data[0] += '&nbsp;' * 8; count += 4
+                        elif ks[0] != "": data[0] += "<span class='" + data_file.Capacitors.get_colour(count) + " d-block mb-n4'>" + ks[0] + "</span>" + '<br>'
+                        else: data[0] += ks[0] + '<br>'
 
-                elif layout_item is layout.capacitors_o:
-                    select = False
-                    try:
-                        volt_layout = layout.caps_o_volt_layout[flask.request.args['volts']]
-                        for l in volt_layout:
-                            if k == query and l[0] < count / 4 <= l[1]: select = True
-                    except (KeyError, IndexError): volt_layout = None  # if the voltage is invalid, set the variable to None
-
-                    if select:
-                        data[0] += "<span class='bg-danger d-block mb-n4'>" + k + "</span>" + '<br>'
+                elif layout_item is data_file.CapacitorsE.table:
+                    ks = k.split('|')
+                    if ks[0] == query and ks[1] != '' and ks[1] == flask.request.args['volts']:
+                        data[0] += "<span class='bg-danger d-block mb-n4'>" + ks[0] + "</span>" + '<br>'
                         item_count += 1
-                    elif k == 'EoL': data[0] += 'EoL'; count -= 1
-                    elif k == '&nbsp;': data[0] += '&nbsp;'*8; count += 4
                     else:
-                        if k != "": data[0] += "<span class='" + layout.get_capacitor_o_colour(count) + " d-block mb-n4'>" + k + "</span>" + '<br>'
-                        else: data[0] += k + '<br>'
+                        if k == 'nbsp': data[0] += '&nbsp;' * 8; count += 4
+                        elif ks[0] != "": data[0] += "<span class='" + data_file.CapacitorsE.get_colour(count) + " d-block mb-n4'>" + ks[0] + "</span>" + '<br>'
+                        else: data[0] += ks[0] + '<br>'
 
             data2.append(data)
         table_data.append(data2)
@@ -166,22 +161,22 @@ def create_data(query, layout_item):
     if item_count == 0: stock_header = "We may not have this item in stock"
     else: stock_header = "Items that match this description are <span class='bg-danger'>highlighed in red</span>"
 
-    if layout_item is layout.resistors:
-        layout_pricing = layout.resistors_pricing
-        message = layout.resistor_message
-    elif layout_item is layout.potentiometers:
-        layout_pricing = layout.pots_pricing
-        message = layout.pot_message
-    elif layout_item is layout.capacitors_e:
-        layout_pricing = layout.caps_e_pricing
-        message = layout.caps_e_message
-    elif layout_item is layout.capacitors_o:
-        layout_pricing = layout.caps_o_pricing
-        message = layout.caps_message
-        message2 = layout.caps_message2
+    if layout_item is data_file.Resistors.table:
+        item_pricing = data_file.Resistors.pricing
+        message = data_file.Resistors.message
+    elif layout_item is data_file.Potentiometers.table:
+        item_pricing = data_file.Potentiometers.pricing
+        message = data_file.Potentiometers.message
+    elif layout_item is data_file.CapacitorsE.table:
+        item_pricing = data_file.CapacitorsE.pricing
+        message = data_file.CapacitorsE.message
+    elif layout_item is data_file.Capacitors.table:
+        item_pricing = data_file.Capacitors.pricing
+        message = data_file.Capacitors.message
+        message2 = data_file.Capacitors.message2
     # There is no else SO it errors if layout_item is not above, because if it's made it this far then somethings clearly wrong
 
-    return flask.render_template("table.html", table_data=table_data, header=stock_header, message=message, message2=message2, pricing=layout_pricing)
+    return flask.render_template("table.html", table_data=table_data, header=stock_header, message=message, message2=message2, pricing=item_pricing)
 
 
 if __name__ == '__main__':
