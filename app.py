@@ -10,7 +10,7 @@ fa = FontAwesome(app)
 
 @app.route('/')
 def main_page():
-    if flask.request.remote_addr == '127.0.0.1':  # Check if it is being accessed by itself (for screensaver)
+    if flask.request.remote_addr == '127.0.0.1':  # Check if it is being accessed by itself (for screen saver)
         from random import randint  # Moves the menu to a random part of the screen to act as a screen saver
         return flask.render_template("main.html", p_top=randint(0, 20), p_left=randint(-10, 15))
     else: return flask.render_template("main.html", p_top=None, p_left=None)  # Setting p_top or p_left to None disables the screen saver
@@ -24,8 +24,8 @@ def resistor_page():
         return flask.render_template("error.html", title="Please enter a valid resistance", subtitle="Redirecting to the first page in 10 seconds..."), 400
     else:
         print("R: Got Query", query)
-        #return create_data(query, layout.resistors)
         return create_data(query, data_file.Resistors.table)
+
 
 @app.route('/capacitors_e')
 def capacitor_e_page():
@@ -38,6 +38,7 @@ def capacitor_e_page():
     else:
         print("C: Got Query", query, volts + 'V')
         return create_data(query, data_file.CapacitorsE.table)
+
 
 @app.route('/capacitors_o')
 def capacitor_o_page():
@@ -61,6 +62,7 @@ def potentiometer_page():
     else:
         print("P: Got Query", query)
         return create_data(query, data_file.Potentiometers.table)
+
 
 @app.errorhandler(404)
 def page_not_found(error):  # This will catch errors and redirect to the home screen so the Raspberry Pi does not get stuck on one page
@@ -159,7 +161,7 @@ def create_data(query, layout_item):
     message2 = ""
 
     if item_count == 0: stock_header = "We may not have this item in stock"
-    else: stock_header = "Items that match this description are <span class='bg-danger'>highlighed in red</span>"
+    else: stock_header = "Items that match this description are <span class='bg-danger'>highlighted in red</span>"
 
     if layout_item is data_file.Resistors.table:
         item_pricing = data_file.Resistors.pricing

@@ -1,5 +1,5 @@
-def openCSV(fileName):
-    file = open("CSVs\\" + fileName, 'r')
+def openCSV(filename):
+    file = open("CSVs\\" + filename, 'r')
     split1 = []
     for line in file:
         split1.append(line.replace(',\n', '').split(','))
@@ -21,8 +21,8 @@ class Resistors:
 
     message = ""
 
-    def get_colour(countin):
-        count = (countin - 11) / 4
+    def get_colour(countIn):
+        count = (countIn - 11) / 4
         if count <= 31: return "bg-light text-dark"
         elif count <= 38: return "bg-warning text-dark"
         elif count <= 59: return "bg-success"
@@ -38,8 +38,8 @@ class Potentiometers:
 
     message = "Starts from row 5"
 
-    def get_colour(countin):
-        count = (countin - 2) / 4
+    def get_colour(countIn):
+        count = (countIn - 2) / 4
         if count <= 5: return "bg-light text-dark"
         elif count <= 7: return "bg-primary"
         elif count <= 8: return "bg-light text-dark"
@@ -59,9 +59,9 @@ class Capacitors:
     message = "Starts from row 6 on the Left"
     message2 = "Right side"
 
-    def get_colour(countin):
-        count1 = (countin - 10) / 4
-        count2 = (countin - 139) / 4
+    def get_colour(countIn):
+        count1 = (countIn - 10) / 4
+        count2 = (countIn - 139) / 4
         if count1 <= 9: return "bg-light text-dark"
         elif count1 <= 11: return "bg-purple"
         elif count1 <= 13: return "bg-purple"
@@ -91,7 +91,7 @@ class CapacitorsE:
 
     message = "Starts from row 8"
 
-    def get_colour(countin):
+    def get_colour(countIn):
         return "bg-light text-dark"
 
 
